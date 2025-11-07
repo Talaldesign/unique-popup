@@ -1,13 +1,23 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/unique-popup/" />
-    <title>Popup Showcase</title>
-    <script type="module" crossorigin src="/unique-popup/assets/index-DaxNoWRb.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <title>Unique Popup</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <button id="openPopup">Open Popup</button>
+
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <span class="close" id="closePopup">&times;</span>
+            <h2>Unique Popup</h2>
+            <p>This is a custom interactive popup.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>
