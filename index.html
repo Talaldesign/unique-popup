@@ -2,38 +2,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unique Popup PRO</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unique Popup Advanced</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="admin-panel">
-    <h2>Popup Control Panel</h2>
 
-    <label>Title:</label>
-    <input id="titleInput" type="text" placeholder="Popup Title" />
+  <header>
+    <img src="logo.png" class="logo" alt="Logo">
+  </header>
 
-    <label>Message:</label>
-    <textarea id="messageInput" placeholder="Popup message"></textarea>
+  <div id="adminLogin" class="admin-login">
+    <h2>Admin Login</h2>
+    <input id="adminPass" type="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+  </div>
 
-    <label>Theme:</label>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="glass">Glass</option>
-      <option value="neon">Neon</option>
-    </select>
+  <div id="adminPanel" class="admin-panel" style="display:none;">
+    <h2>Control Panel</h2>
 
-    <button id="applyChanges">Apply</button>
-    <button id="openPopup">Show Popup</button>
+    <label>Add Phrase</label>
+    <input id="phraseInput" type="text" placeholder="Enter phrase">
+    <button id="addPhraseBtn">Add</button>
+
+    <h3>Phrases</h3>
+    <ul id="phraseList"></ul>
+
+    <label>Facebook</label>
+    <input id="facebookInput" type="text" placeholder="Link">
+
+    <label>Twitter</label>
+    <input id="twitterInput" type="text" placeholder="Link">
+
+    <label>Instagram</label>
+    <input id="instagramInput" type="text" placeholder="Link">
+
+    <button id="saveLinksBtn">Save Links</button>
   </div>
 
   <div class="popup" id="popup">
-    <div class="popup-content" id="popupContent">
+    <div class="popup-content">
       <span class="close" id="closePopup">&times;</span>
-      <h2 id="popupTitle">Unique Popup</h2>
-      <p id="popupMessage">Amazing popup system.</p>
+      <h2 id="popupPhrase">Welcome!</h2>
+      <div class="social">
+        <a id="fb" target="_blank">FB</a>
+        <a id="tw" target="_blank">TW</a>
+        <a id="ig" target="_blank">IG</a>
+      </div>
     </div>
   </div>
 
