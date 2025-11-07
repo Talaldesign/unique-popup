@@ -2,22 +2,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unique Popup</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unique Popup PRO</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <button id="openPopup">Open Popup</button>
+  <div class="admin-panel">
+    <h2>Popup Control Panel</h2>
 
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <span class="close" id="closePopup">&times;</span>
-            <h2>Unique Popup</h2>
-            <p>This is a custom interactive popup.</p>
-        </div>
+    <label>Title:</label>
+    <input id="titleInput" type="text" placeholder="Popup Title" />
+
+    <label>Message:</label>
+    <textarea id="messageInput" placeholder="Popup message"></textarea>
+
+    <label>Theme:</label>
+    <select id="themeSelect">
+      <option value="default">Default</option>
+      <option value="dark">Dark</option>
+      <option value="glass">Glass</option>
+      <option value="neon">Neon</option>
+    </select>
+
+    <button id="applyChanges">Apply</button>
+    <button id="openPopup">Show Popup</button>
+  </div>
+
+  <div class="popup" id="popup">
+    <div class="popup-content" id="popupContent">
+      <span class="close" id="closePopup">&times;</span>
+      <h2 id="popupTitle">Unique Popup</h2>
+      <p id="popupMessage">Amazing popup system.</p>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
