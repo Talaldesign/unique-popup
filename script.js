@@ -5,6 +5,8 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 
+
+
 async function loadInitial() {
   const { data: phrasesData } = await supabaseClient.from('phrases').select('id,text').order('id', { ascending: false });
   const phrases = (phrasesData || []).map(r => r.text);
