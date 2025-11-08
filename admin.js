@@ -1,8 +1,8 @@
-/* Admin dashboard script (admin.html) — manages phrases, socials, analytics realtime */
+/* admin.js: dashboard logic for managing phrases, socials and analytics */
 
 function uid(len=8){ const s='abcdefghijklmnopqrstuvwxyz0123456789'; let r=''; for(let i=0;i<len;i++) r+=s[Math.floor(Math.random()*s.length)]; return r; }
 
-/* Load stored data */
+/* Load stored data or defaults */
 let settings = JSON.parse(localStorage.getItem('up.settings')||'{}');
 let phrases = JSON.parse(localStorage.getItem('up.phrases')||'["أهلاً بك!","تجربة ممتعة","رسالة فريدة"]');
 let socials = JSON.parse(localStorage.getItem('up.socials')||'[]');
@@ -13,11 +13,10 @@ localStorage.setItem('up.settings', JSON.stringify(settings));
 localStorage.setItem('up.phrases', JSON.stringify(phrases));
 localStorage.setItem('up.socials', JSON.stringify(socials));
 
-/* BroadcastChannel */
 let bc = null;
-try{ bc = new BroadcastChannel('unique-popup-channel'); } catch(e){ bc=null; }
+try{ bc = new BroadcastChannel('unique-popup-channel'); } catch(e){ bc = null; }
 
-/* UI references */
+/* UI elements */
 const phraseInput = document.getElementById('phraseInput');
 const addPhraseBtn = document.getElementById('addPhrase');
 const phrasesList = document.getElementById('phrasesList');
@@ -36,20 +35,21 @@ const statUniques = document.getElementById('statUniques');
 const statShown = document.getElementById('statShown');
 const statClicks = document.getElementById('statClicks');
 const liveEvents = document.getElementById('liveEvents');
+
 const exportBtn = document.getElementById('exportBtn');
 const resetStats = document.getElementById('resetStats');
 
-/* Render functions */
+/* Renderers */
 function renderPhrases(){
   phrasesList.innerHTML = '';
   phrases.forEach((p,i)=>{
     const li = document.createElement('li');
-    const left = document.createElement('div'); left.style.flex='1'; left.textContent = p;
+    const span = document.createElement('div'); span.style.flex='1'; span.textContent = p;
     const edit = document.createElement('button'); edit.textContent='✎'; edit.className='btn';
     edit.onclick = ()=>{ const v = prompt('تعديل العبارة:', p); if(v!==null){ phrases[i]=v; savePhrases(); } };
     const del = document.createElement('button'); del.textContent='✕'; del.className='btn warn';
     del.onclick = ()=>{ if(confirm('حذف العبارة؟')){ phrases.splice(i,1); savePhrases(); } };
-    li.appendChild(left); li.appendChild(edit); li.appendChild(del);
+    li.appendChild(span); li.appendChild(edit); li.appendChild(del);
     phrasesList.appendChild(li);
   });
 }
@@ -100,7 +100,7 @@ addSocialBtn.addEventListener('click', ()=>{
   reader.readAsDataURL(file);
 });
 
-/* Theme apply */
+/* Apply theme */
 applyThemeBtn.addEventListener('click', ()=>{
   const t = themeSelect.value;
   settings.theme = t;
@@ -110,7 +110,7 @@ applyThemeBtn.addEventListener('click', ()=>{
   addLiveEvent({type:'theme_changed', info:t});
 });
 
-/* Analytics functions */
+/* Analytics UI */
 function updateStatsUI(){
   statVisits.textContent = localStorage.getItem('analytics.visits')||'0';
   statUniques.textContent = localStorage.getItem('analytics.uniques')||'0';
@@ -154,10 +154,10 @@ renderPhrases();
 renderSocials();
 updateStatsUI();
 
-/* Listen for broadcast events to update live UI */
+/* Listen to broadcast events */
 if(bc){
-  bc.onmessage = (ev)=>{ const e = ev.data; addLiveEvent(e); updateStatsUI(); };
+  bc.onmessage = (ev)=>{ addLiveEvent(ev.data); updateStatsUI(); };
 }
 
-/* when page loads, apply current theme */
+/* set theme on load */
 document.documentElement.className = settings.theme || 'theme-dark';

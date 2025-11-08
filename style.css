@@ -1,4 +1,3 @@
-/* Shared styles */
 :root{
   --accent: #00d4ff;
   --bg-dark: linear-gradient(135deg,#071029,#001a3d);
@@ -27,7 +26,7 @@ body{
   font-size:28px; line-height:1.4; text-align:center; max-width:900px;
   min-width:320px;
 }
-.hidden{opacity:0}
+.hidden{opacity:0; transform: translateY(10px); transition: opacity .3s, transform .3s;}
 
 /* Typewriter cursor */
 .cursor{ color:var(--accent); margin-left:8px; font-weight:700; animation:blink .8s infinite; }

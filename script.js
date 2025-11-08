@@ -16,14 +16,14 @@ if(!localStorage.getItem('visitorId')) {
 const visits = parseInt(localStorage.getItem('analytics.visits')||'0',10) + 1;
 localStorage.setItem('analytics.visits', visits);
 
-/* Load settings */
+/* Load settings and data */
 const settings = JSON.parse(localStorage.getItem('up.settings')||'{}');
 const phrases = JSON.parse(localStorage.getItem('up.phrases')||'["أهلاً بك!","تجربة ممتعة","رسالة فريدة"]');
 const socials = JSON.parse(localStorage.getItem('up.socials')||'[]');
 
-/* Make BroadcastChannel for real-time updates */
+/* BroadcastChannel for realtime updates */
 let bc = null;
-try { bc = new BroadcastChannel('unique-popup-channel'); } catch(e){ bc = null; }
+try { bc = new BroadcastChannel('unique-popup-channel'); } catch(e) { bc = null; }
 
 /* Helper: increment analytic counter */
 function incrCounter(key, by=1){
@@ -32,7 +32,7 @@ function incrCounter(key, by=1){
   return val;
 }
 
-/* Show popup with unique phrase persisted across refresh for this session */
+/* Pick unique message per session and persist it across refresh */
 let finalMsg = sessionStorage.getItem('final_msg');
 if(!finalMsg){
   const used = JSON.parse(sessionStorage.getItem('used_msgs')||'[]');
@@ -42,19 +42,16 @@ if(!finalMsg){
     used.push(finalMsg);
     sessionStorage.setItem('used_msgs', JSON.stringify(used));
     sessionStorage.setItem('final_msg', finalMsg);
-    // analytics: shown
     incrCounter('analytics.shown',1);
     if(bc) bc.postMessage({type:'popup_shown', info: finalMsg});
-  } else {
-    // no available phrases -> don't show
   }
 }
 
-/* Typewriter */
+/* Typewriter effect */
 function typeWriter(text, i=0){
   const tw = document.getElementById('typewriter');
   const popup = document.getElementById('popupCard');
-  if(!popup) return;
+  if(!popup || !tw) return;
   popup.classList.remove('hidden');
   tw.textContent = text.substring(0,i);
   if(i < text.length) setTimeout(()=>typeWriter(text,i+1), 45 + Math.floor(Math.random()*15));
@@ -64,6 +61,7 @@ if(finalMsg) typeWriter(finalMsg);
 /* Render social icons outside popup */
 function renderSocials(){
   const container = document.getElementById('socialIcons');
+  if(!container) return;
   container.innerHTML = '';
   socials.forEach(s=>{
     const img = document.createElement('img');
@@ -80,42 +78,42 @@ function renderSocials(){
 }
 renderSocials();
 
-/* Admin button opens dashboard page (separate file) with password prompt */
-document.getElementById('adminBtn').addEventListener('click', ()=>{
-  const settingsLocal = JSON.parse(localStorage.getItem('up.settings')||'{}');
-  const pass = prompt('أدخل كلمة مرور المشرف:');
-  if(!pass) return;
-  if(settingsLocal.adminPass && settingsLocal.adminPass !== pass){
-    alert('كلمة المرور خاطئة'); return;
-  }
-  // open admin in a new tab
-  window.open('dashboard.html', '_blank');
-});
+/* Admin button opens dashboard (with password prompt) */
+const adminBtn = document.getElementById('adminBtn');
+if(adminBtn){
+  adminBtn.addEventListener('click', ()=>{
+    const settingsLocal = JSON.parse(localStorage.getItem('up.settings')||'{}');
+    const pass = prompt('أدخل كلمة مرور المشرف:');
+    if(!pass) return;
+    if(settingsLocal.adminPass && settingsLocal.adminPass !== pass){
+      alert('كلمة المرور خاطئة'); return;
+    }
+    window.open('dashboard.html', '_blank');
+  });
+}
 
-/* Apply theme from settings (listen to storage events so dashboard apply is immediate) */
+/* Apply theme */
 function applyTheme(){
   const s = JSON.parse(localStorage.getItem('up.settings')||'{}');
   const theme = s.theme || 'theme-dark';
+  // set on documentElement to let CSS :root theme classes work
   document.documentElement.className = theme;
 }
 applyTheme();
-window.addEventListener('storage', (e)=>{ // when dashboard updates settings in same origin
+/* update theme if changed in another tab (dashboard) */
+window.addEventListener('storage', (e)=>{
   if(e.key === 'up.settings' || e.key === 'theme.apply'){
     applyTheme();
   }
 });
 
-/* update visit counter display via console (dashboard will read from localStorage) */
-console.log('visits', localStorage.getItem('analytics.visits'));
-
-/* When popup is shown, ensure visits counter updated already */
+/* Ensure visits stored (we incremented earlier) */
 incrCounter('analytics.visits', 0);
 
-/* Broadcast updates to other tabs */
+/* Listen to broadcast for realtime events (optional) */
 if(bc){
   bc.onmessage = (ev) => {
-    const d = ev.data;
-    // other tab events can be handled if needed
-    console.log('bc event', d);
+    // events from dashboard / other tabs
+    console.log('Broadcast event', ev.data);
   };
 }
