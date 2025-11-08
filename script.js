@@ -1,19 +1,31 @@
-// استخدم Supabase UMD بشكل صحيح
+// استخدم الكائن العالمي مباشرة
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function loadInitial(){
-  const { data: phrasesData } = await supabaseClient.from('phrases').select('id,text').order('id', {ascending:false});
+// بقية كودك بدون أي تغيير
+async function loadInitial() {
+  const { data: phrasesData } = await supabaseClient
+    .from('phrases')
+    .select('id,text')
+    .order('id', { ascending: false });
   const phrases = (phrasesData || []).map(r => r.text);
 
-  const { data: socialsData } = await supabaseClient.from('socials').select('id,name,url,icon_base64').order('id', {ascending:false});
+  const { data: socialsData } = await supabaseClient
+    .from('socials')
+    .select('id,name,url,icon_base64')
+    .order('id', { ascending: false });
   const socials = socialsData || [];
 
-  const { data: settingsData } = await supabaseClient.from('settings').select('key,value');
+  const { data: settingsData } = await supabaseClient
+    .from('settings')
+    .select('key,value');
   const settings = {};
-  (settingsData || []).forEach(s => settings[s.key] = s.value);
+  (settingsData || []).forEach(s => (settings[s.key] = s.value));
 
   return { phrases, socials, settings };
 }
+
+// ثم تابع باقي الكود: chooseSessionMessage, typeWriter, renderSocials, initPage
+
 
 function chooseSessionMessage(phrases){
   let finalMsg = sessionStorage.getItem('final_msg');
