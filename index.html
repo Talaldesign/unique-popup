@@ -7,22 +7,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header / Logo outside popup -->
   <header id="siteHeader">
     <img id="siteLogo" src="assets/logo.png" alt="Logo" />
   </header>
 
-  <!-- Popup card (message only, no close button) -->
   <main id="mainArea">
     <div id="popupCard" class="popup-card hidden" role="dialog" aria-live="polite">
       <div id="messageArea"><span id="typewriter"></span><span class="cursor">|</span></div>
     </div>
 
-    <!-- Social icons (outside popup to avoid crowding) -->
     <div id="socialIcons" class="social-icons" aria-label="روابط التواصل الاجتماعي"></div>
   </main>
 
-  <!-- Admin button (opens dashboard.html in new tab after password) -->
   <button id="adminBtn" class="admin-btn" title="لوحة التحكم">⚙️</button>
 
   <script src="script.js" defer></script>

@@ -16,10 +16,13 @@ if(!localStorage.getItem('visitorId')) {
 const visits = parseInt(localStorage.getItem('analytics.visits')||'0',10) + 1;
 localStorage.setItem('analytics.visits', visits);
 
-/* Load settings and data */
-const settings = JSON.parse(localStorage.getItem('up.settings')||'{}');
-const phrases = JSON.parse(localStorage.getItem('up.phrases')||'["أهلاً بك!","تجربة ممتعة","رسالة فريدة"]');
-const socials = JSON.parse(localStorage.getItem('up.socials')||'[]');
+/* Load settings and data (read the authoritative keys) */
+function loadData(){
+  const settings = JSON.parse(localStorage.getItem('up.settings')||'{}');
+  const phrases = JSON.parse(localStorage.getItem('up.phrases')||'[]');
+  const socials = JSON.parse(localStorage.getItem('up.socials')||'[]');
+  return {settings, phrases, socials};
+}
 
 /* BroadcastChannel for realtime updates */
 let bc = null;
@@ -33,21 +36,24 @@ function incrCounter(key, by=1){
 }
 
 /* Pick unique message per session and persist it across refresh */
-let finalMsg = sessionStorage.getItem('final_msg');
-if(!finalMsg){
-  const used = JSON.parse(sessionStorage.getItem('used_msgs')||'[]');
-  const available = phrases.filter(p => !used.includes(p));
-  if(available.length>0){
-    finalMsg = available[Math.floor(Math.random()*available.length)];
-    used.push(finalMsg);
-    sessionStorage.setItem('used_msgs', JSON.stringify(used));
-    sessionStorage.setItem('final_msg', finalMsg);
-    incrCounter('analytics.shown',1);
-    if(bc) bc.postMessage({type:'popup_shown', info: finalMsg});
+function chooseFinalMessage(phrases){
+  let finalMsg = sessionStorage.getItem('final_msg');
+  if(!finalMsg){
+    const used = JSON.parse(sessionStorage.getItem('used_msgs')||'[]');
+    const available = phrases.filter(p => !used.includes(p));
+    if(available.length>0){
+      finalMsg = available[Math.floor(Math.random()*available.length)];
+      used.push(finalMsg);
+      sessionStorage.setItem('used_msgs', JSON.stringify(used));
+      sessionStorage.setItem('final_msg', finalMsg);
+      incrCounter('analytics.shown',1);
+      if(bc) bc.postMessage({type:'popup_shown', info: finalMsg});
+    }
   }
+  return finalMsg;
 }
 
-/* Typewriter effect */
+/* Typewriter */
 function typeWriter(text, i=0){
   const tw = document.getElementById('typewriter');
   const popup = document.getElementById('popupCard');
@@ -56,10 +62,9 @@ function typeWriter(text, i=0){
   tw.textContent = text.substring(0,i);
   if(i < text.length) setTimeout(()=>typeWriter(text,i+1), 45 + Math.floor(Math.random()*15));
 }
-if(finalMsg) typeWriter(finalMsg);
 
 /* Render social icons outside popup */
-function renderSocials(){
+function renderSocials(socials){
   const container = document.getElementById('socialIcons');
   if(!container) return;
   container.innerHTML = '';
@@ -76,44 +81,69 @@ function renderSocials(){
     container.appendChild(img);
   });
 }
-renderSocials();
 
-/* Admin button opens dashboard (with password prompt) */
-const adminBtn = document.getElementById('adminBtn');
-if(adminBtn){
-  adminBtn.addEventListener('click', ()=>{
-    const settingsLocal = JSON.parse(localStorage.getItem('up.settings')||'{}');
-    const pass = prompt('أدخل كلمة مرور المشرف:');
-    if(!pass) return;
-    if(settingsLocal.adminPass && settingsLocal.adminPass !== pass){
-      alert('كلمة المرور خاطئة'); return;
-    }
-    window.open('dashboard.html', '_blank');
-  });
+/* Initialize page using stored data */
+function initPage(){
+  const {settings, phrases, socials} = loadData();
+  // choose and display final message
+  const finalMsg = chooseFinalMessage(phrases);
+  if(finalMsg) typeWriter(finalMsg);
+  // render socials
+  renderSocials(socials);
+  // apply theme
+  document.documentElement.className = settings.theme || 'theme-dark';
 }
 
-/* Apply theme */
-function applyTheme(){
-  const s = JSON.parse(localStorage.getItem('up.settings')||'{}');
-  const theme = s.theme || 'theme-dark';
-  // set on documentElement to let CSS :root theme classes work
-  document.documentElement.className = theme;
-}
-applyTheme();
-/* update theme if changed in another tab (dashboard) */
+/* react to storage changes from admin or other tabs */
 window.addEventListener('storage', (e)=>{
-  if(e.key === 'up.settings' || e.key === 'theme.apply'){
-    applyTheme();
+  if(e.key && (e.key.startsWith('up.') || e.key==='up.phrases' || e.key==='up.socials' || e.key==='up.settings')){
+    // reload data and update UI
+    const {phrases, socials} = loadData();
+    // if user hasn't got a final_msg yet, choose again
+    if(!sessionStorage.getItem('final_msg')){
+      const finalMsg = chooseFinalMessage(phrases);
+      if(finalMsg) typeWriter(finalMsg);
+    }
+    renderSocials(socials);
+    // apply theme in case settings changed
+    const settings = JSON.parse(localStorage.getItem('up.settings')||'{}');
+    document.documentElement.className = settings.theme || 'theme-dark';
   }
 });
 
-/* Ensure visits stored (we incremented earlier) */
-incrCounter('analytics.visits', 0);
-
-/* Listen to broadcast for realtime events (optional) */
+/* BroadcastChannel messages */
 if(bc){
-  bc.onmessage = (ev) => {
-    // events from dashboard / other tabs
-    console.log('Broadcast event', ev.data);
+  bc.onmessage = (ev)=>{
+    const d = ev.data;
+    if(d && d.type){
+      // update UI based on event
+      if(d.type==='phrases_updated' || d.type==='socials_updated' || d.type==='theme_changed'){
+        const {phrases, socials} = loadData();
+        renderSocials(socials);
+        if(!sessionStorage.getItem('final_msg')){
+          const finalMsg = chooseFinalMessage(phrases);
+          if(finalMsg) typeWriter(finalMsg);
+        }
+        document.documentElement.className = JSON.parse(localStorage.getItem('up.settings')||'{}').theme || 'theme-dark';
+      }
+    }
   };
 }
+
+/* Admin open (password check) */
+document.addEventListener('DOMContentLoaded', ()=>{
+  initPage();
+  // admin button open
+  const adminBtn = document.getElementById('adminBtn');
+  if(adminBtn){
+    adminBtn.addEventListener('click', ()=>{
+      const settings = JSON.parse(localStorage.getItem('up.settings')||'{}');
+      const pass = prompt('أدخل كلمة مرور المشرف:');
+      if(!pass) return;
+      if(settings.adminPass && settings.adminPass !== pass){ alert('كلمة المرور خاطئة'); return; }
+      window.open('dashboard.html', '_blank');
+    });
+  }
+  // ensure visits stored increment already performed earlier
+  incrCounter('analytics.visits', 0);
+});

@@ -30,6 +30,10 @@
         <button id="addPhrase" class="btn">إضافة</button>
       </div>
       <ul id="phrasesList" class="list"></ul>
+      <div class="row">
+        <button id="exportPhrases" class="btn">تصدير العبارات</button>
+        <button id="importPhrases" class="btn">استيراد عبارات</button>
+      </div>
     </section>
 
     <section class="card">
@@ -43,6 +47,10 @@
         <button id="addSocial" class="btn">إضافة</button>
       </div>
       <ul id="socialList" class="list"></ul>
+      <div class="row">
+        <button id="exportSocials" class="btn">تصدير الحسابات</button>
+        <button id="importSocials" class="btn">استيراد حسابات</button>
+      </div>
     </section>
 
     <section class="card">
@@ -56,12 +64,17 @@
       <h3>سجل الأحداث (وقت حقيقي)</h3>
       <ul id="liveEvents" class="live-list"></ul>
       <div class="row">
-        <button id="exportBtn" class="btn">تصدير JSON</button>
+        <button id="exportBtn" class="btn">تصدير JSON كامل</button>
         <button id="resetStats" class="btn warn">إعادة ضبط الإحصائيات</button>
       </div>
     </section>
 
-    <footer class="muted">غير متصل بخادم — البيانات محفوظة محليًا (localStorage).</footer>
+    <section class="card">
+      <h2>مزامنة عبر الأجهزة</h2>
+      <p>إذا أردت مشاركة البيانات مع جهاز آخر، استخدم <strong>تصدير JSON</strong> في الأعلى ثم استورد الملف على الجهاز الآخر.</p>
+    </section>
+
+    <footer class="muted">غير متصل بخادم — البيانات محفوظة محليًا (localStorage). استخدم التصدير/الاستيراد للمزامنة بين الأجهزة.</footer>
   </div>
 
   <script src="admin.js" defer></script>
