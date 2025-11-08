@@ -2,13 +2,13 @@
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function loadInitial(){
-  const { data: phrasesData } = await supabaseClient.from('phrases').select('id,text').order('id', {ascending:false});
+  const { data: phrasesData } = await sb.from('phrases').select('id,text').order('id', {ascending:false});
   const phrases = (phrasesData || []).map(r => r.text);
 
-  const { data: socialsData } = await supabaseClient.from('socials').select('id,name,url,icon_base64').order('id', {ascending:false});
+  const { data: socialsData } = await sb.from('socials').select('id,name,url,icon_base64').order('id', {ascending:false});
   const socials = socialsData || [];
 
-  const { data: settingsData } = await supabaseClient.from('settings').select('key,value');
+  const { data: settingsData } = await sb.from('settings').select('key,value');
   const settings = {};
   (settingsData || []).forEach(s => settings[s.key] = s.value);
 
