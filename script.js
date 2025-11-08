@@ -1,3 +1,4 @@
+// استخدم window.supabase لتجنب ReferenceError
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function loadInitial(){
