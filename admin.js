@@ -2,9 +2,9 @@
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function loadAll(){
-  const { data: phrasesData } = await supabase.from('phrases').select('*').order('id', {ascending:false});
-  const { data: socialsData } = await supabase.from('socials').select('*').order('id', {ascending:false});
-  const { data: settingsData } = await supabase.from('settings').select('key,value');
+  const { data: phrasesData } = await sb.from('phrases').select('*').order('id', {ascending:false});
+  const { data: socialsData } = await sb.from('socials').select('*').order('id', {ascending:false});
+  const { data: settingsData } = await sb.from('settings').select('key,value');
   const settings = {};
   (settingsData||[]).forEach(s => settings[s.key] = s.value);
   return { phrases: phrasesData||[], socials: socialsData||[], settings };
