@@ -1,7 +1,7 @@
 // Supabase Client
 const supabase = window.supabase.createClient(
   "https://hdxnicjeamkwkuczcxov.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ..."
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkeG5pY2plYW1rd2t1Y3pjeG92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MDY4MzgsImV4cCI6MjA3ODA4MjgzOH0.tS3MdNUy3CeT4Gaw9BfKW7riz-vOGud3iaAYd9xw6KE"
 );
 
 const table = "messages"; // اسم الجدول
