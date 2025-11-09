@@ -39,3 +39,15 @@ async function updateMsg() {
     ? "فشل الحفظ!"
     : "✅ تم التحديث وتزامن للجميع";
 }
+
+function openAdmin() {
+  const pass = prompt("ادخل كلمة المرور:");
+
+  // ضع كلمة المرور التي تريدها
+  if (pass === "1234") {
+    // فتح لوحة التحكم
+    window.location.href = "admin.html";
+  } else {
+    alert("❌ كلمة المرور غير صحيحة");
+  }
+}
