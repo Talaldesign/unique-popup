@@ -1,21 +1,41 @@
-// ✅ Supabase Client (بدون Import / بدون Module)
+// Supabase Client
 const supabase = window.supabase.createClient(
   "https://hdxnicjeamkwkuczcxov.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." // ← ضع مفتاحك كاملا
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ..."
 );
 
-// ✅ وظيفة تجريبية لجلب بيانات من جدول "users"
-async function fetchUsers() {
-    const outputElement = document.getElementById("output");
-    outputElement.textContent = "جاري الجلب...";
+const table = "messages"; // اسم الجدول
 
-    const { data, error } = await supabase
-        .from("users")
-        .select("*");
+// === صفحة العرض ===
+async function loadMessage() {
+  const { data, error } = await supabase
+    .from(table)
+    .select("text")
+    .eq("id", 1)
+    .single();
 
-    if (error) {
-        outputElement.textContent = "خطأ: " + error.message;
-    } else {
-        outputElement.textContent = JSON.stringify(data, null, 2);
-    }
+  if (data) document.getElementById("msg").textContent = data.text;
+}
+if (document.getElementById("msg")) loadMessage();
+
+// Real-time sync
+supabase
+  .channel("messages-changes")
+  .on("postgres_changes", { event: "*", schema: "public", table }, payload => {
+    if (document.getElementById("msg"))
+      document.getElementById("msg").textContent = payload.new.text;
+  })
+  .subscribe();
+
+// === لوحة التحكم ===
+async function updateMsg() {
+  const text = document.getElementById("newMsg").value;
+  const { error } = await supabase
+    .from(table)
+    .update({ text })
+    .eq("id", 1);
+
+  document.getElementById("status").textContent = error
+    ? "فشل الحفظ!"
+    : "✅ تم التحديث وتزامن للجميع";
 }
