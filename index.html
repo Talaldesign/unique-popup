@@ -1,34 +1,28 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supabase Test</title>
+<meta charset="UTF-8">
+<title>عبارة المستخدم</title>
 
-    <!-- ✅ Supabase CDN v2 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        body {
-            font-family: sans-serif;
-            direction: rtl;
-            padding: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-    </style>
+<style>
+body {
+  text-align: center;
+  font-family: sans-serif;
+  padding-top: 50px;
+}
+#msg {
+  font-size: 28px;
+  font-weight: bold;
+}
+</style>
 </head>
 <body>
 
-    <h1>مرحبا بك!</h1>
-    <p>تم ربط المشروع مع Supabase بشكل سحابي.</p>
-    <button onclick="fetchUsers()">جلب البيانات</button>
+<h2>رسالة المستخدم:</h2>
+<div id="msg">جاري التحميل...</div>
 
-    <pre id="output"></pre>
-
-    <!-- ✅ JS ملف -->
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
