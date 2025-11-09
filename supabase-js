@@ -1,0 +1,7 @@
+const channel = supabase
+  .channel('public:phrases')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'phrases' }, payload => {
+    console.log('Change received!', payload);
+    fetchPhrases();
+  })
+  .subscribe();
